@@ -66,10 +66,6 @@ class FetchStockData(beam.DoFn):
     # data.fillna(0, inplace=True)
     yield data
 
-def format_as_csv(dataframe):
-  # Convert DataFrame to CSV string, skipping the index
-  return dataframe.to_csv(index=False)
-
 class FlattenList(beam.DoFn):
     def process(self, elements):
         for element in elements:
@@ -101,17 +97,11 @@ def run(argv=None, save_main_session=True):
         | 'FetchStockData' >> beam.ParDo(FetchStockData())
         | 'CombineData' >> beam.CombineGlobally(beam.combiners.ToListCombineFn())
     )     
-       
-    # Flatten the list of DataFrames
-    flattened_data = (
-        processed_data
-        | 'FlattenDataFrames' >> beam.ParDo(FlattenList())
-    )
 
     # Convert DataFrames to CSV format
     csv_lines = (
-        flattened_data
-        | 'ConvertToCSV' >> beam.Map(format_as_csv)
+        processed_data        
+        | 'MergeDataFrames' >> beam.Map(lambda dfs: pd.concat(dfs).to_csv(index=False))
     )
 
     # Write results to csv file
