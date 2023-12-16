@@ -1,0 +1,5 @@
+*.csv*
+*outputs*
+*beam-temp-outputs*
+__pycache__/
+venv/
