@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  data_extraction:
+    build:
+      context: ./data_extraction
+    volumes:
+      - ./data:/app/data
+
+  data_transformation:
+    build:
+      context: ./data_transformation
+    volumes:
+      - ./data:/app/data
+
+  data_loading:
+    build:
+      context: ./data_loading
+    volumes:
+      - ./data:/app/data      
